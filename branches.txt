@@ -1,4 +1,4 @@
 # Upstream branches mirrored to upstream/<name>.
-# Seed new ones by hand first (see README).
 master
 nixos-unstable
+nixos-26.05
