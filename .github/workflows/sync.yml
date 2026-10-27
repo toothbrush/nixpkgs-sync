@@ -1,0 +1,71 @@
+name: sync-nixpkgs
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: sync-nixpkgs
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      AUTH_URL: https://au.auth.entire.io
+      SERVICE_ACCOUNT: svc_01M5XWYWPH2S5VFYBVBKFRMD3C
+      SOURCE: https://github.com/NixOS/nixpkgs.git
+      TARGET: entire://aws-ap-southeast-2.entire.io/et/toothbrush/nixpkgs
+      GIT_SYNC_VERSION: v0.9.0
+      GIT_REMOTE_ENTIRE_SHA: 7b6b53b52d6f6129b09edd615ff54b7b5ea2105e
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache: false
+
+      - name: Install git-sync
+        run: go install "entire.io/entire/git-sync/cmd/git-sync@${GIT_SYNC_VERSION}"
+
+      - name: Install git-remote-entire
+        run: |
+          # Same pinned build as the Buildkite plugin
+          base="https://entire-public-release-bucket-7f3e2a01c9b48d56.s3.us-east-2.amazonaws.com/commit/${GIT_REMOTE_ENTIRE_SHA}"
+          curl -fsSL "${base}/git-remote-entire_linux_amd64.tar.gz" | tar -xz -C "$RUNNER_TEMP"
+          sudo install -m 0755 "$RUNNER_TEMP/git-remote-entire" /usr/local/bin/git-remote-entire
+
+      - name: Get Entire token
+        run: |
+          set -euo pipefail
+          oidc=$(curl -fsS -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${AUTH_URL}/api/authz/sts" | jq -r .value)
+          echo "::add-mask::${oidc}"
+          token=$(curl -fsS --proto '=https' -u entire-cli: "${AUTH_URL}/oauth/token" \
+            --data-urlencode grant_type=urn:ietf:params:oauth:grant-type:token-exchange \
+            --data-urlencode subject_token_type=urn:ietf:params:oauth:token-type:jwt \
+            --data-urlencode "subject_token=${oidc}" \
+            --data-urlencode "audience=${AUTH_URL}" \
+            --data-urlencode "resource=${SERVICE_ACCOUNT}" | jq -r .access_token)
+          test -n "$token" && test "$token" != null
+          echo "::add-mask::${token}"
+          echo "ENTIRE_TOKEN=${token}" >> "$GITHUB_ENV"
+
+      - name: Sync opted-in branches
+        run: |
+          set -euo pipefail
+          # Map each branch to upstream/<branch>
+          args=()
+          while read -r b; do
+            [ -z "$b" ] || [ "${b#\#}" != "$b" ] && continue
+            args+=(--map "${b}:upstream/${b}")
+          done < branches.txt
+          git-sync sync --json "${args[@]}" "$SOURCE" "$TARGET" | tee result.json
+          jq -e '.blocked == 0' result.json > /dev/null
