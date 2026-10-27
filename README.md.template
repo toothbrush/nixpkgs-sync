@@ -1,0 +1,9 @@
+# nixpkgs-sync
+
+{{SYNC_TABLE}}
+
+Every 6 hours, this repo mirrors the branches in `branches.txt` from [NixOS/nixpkgs](https://github.com/NixOS/nixpkgs) to [`/et/toothbrush/nixpkgs`](https://entire.io/et/toothbrush/nixpkgs) on Entire, as `upstream/<branch>`.
+
+Clone with `git clone entire://aws-ap-southeast-2.entire.io/et/toothbrush/nixpkgs`.
+
+<sub>This file is generated from `README.md.template`; edit that instead.</sub>

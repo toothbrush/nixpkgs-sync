@@ -5,9 +5,10 @@ on:
     - cron: "17 */6 * * *"
   workflow_dispatch:
 
+# GITHUB_TOKEN only reaches this repo
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 concurrency:
   group: sync-nixpkgs
@@ -59,6 +60,7 @@ jobs:
           echo "ENTIRE_TOKEN=${token}" >> "$GITHUB_ENV"
 
       - name: Sync opted-in branches
+        id: sync
         run: |
           set -euo pipefail
           # Map each branch to upstream/<branch>
@@ -69,3 +71,17 @@ jobs:
           done < branches.txt
           git-sync sync --json "${args[@]}" "$SOURCE" "$TARGET" | tee result.json
           jq -e '.blocked == 0' result.json > /dev/null
+
+      - name: Update README
+        if: always() && steps.sync.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          ./render-readme.sh result.json
+          git add README.md
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' \
+            -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -m "Update sync status"
+          git push origin HEAD:main
