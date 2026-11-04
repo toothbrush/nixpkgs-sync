@@ -19,13 +19,10 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     env:
-      AUTH_URL: https://au.auth.entire.io
-      SERVICE_ACCOUNT: svc_01M6JDV1WP4PTGV5WBVAQDX3K5
       SOURCE: https://github.com/NixOS/nixpkgs.git
       TARGET: entire://aws-ap-southeast-2.entire.io/et/toothbrush/nixpkgs
       # Pinned to git-sync PR #137 until released
       GIT_SYNC_VERSION: v0.10.1-0.20261104053856-b4b2be3003ea
-      GIT_REMOTE_ENTIRE_SHA: b6900cf9f71bfbebc68b88860892e8ae5bad30b8
     steps:
       - uses: actions/checkout@v7
 
@@ -37,28 +34,11 @@ jobs:
       - name: Install git-sync
         run: go install "entire.io/entire/git-sync/cmd/git-sync@${GIT_SYNC_VERSION}"
 
-      - name: Install git-remote-entire
-        run: |
-          # Published per-commit by entireio/cli
-          base="https://entire-public-release-bucket-7f3e2a01c9b48d56.s3.us-east-2.amazonaws.com/commit/${GIT_REMOTE_ENTIRE_SHA}"
-          curl -fsSL "${base}/git-remote-entire_linux_amd64.tar.gz" | tar -xz -C "$RUNNER_TEMP"
-          sudo install -m 0755 "$RUNNER_TEMP/git-remote-entire" /usr/local/bin/git-remote-entire
-
-      - name: Get Entire token
-        run: |
-          set -euo pipefail
-          oidc=$(curl -fsS -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
-            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${AUTH_URL}/api/authz/sts" | jq -r .value)
-          echo "::add-mask::${oidc}"
-          token=$(curl -fsS --proto '=https' -u entire-cli: "${AUTH_URL}/oauth/token" \
-            --data-urlencode grant_type=urn:ietf:params:oauth:grant-type:token-exchange \
-            --data-urlencode subject_token_type=urn:ietf:params:oauth:token-type:jwt \
-            --data-urlencode "subject_token=${oidc}" \
-            --data-urlencode "audience=${AUTH_URL}" \
-            --data-urlencode "resource=${SERVICE_ACCOUNT}" | jq -r .access_token)
-          test -n "$token" && test "$token" != null
-          echo "::add-mask::${token}"
-          echo "ENTIRE_TOKEN=${token}" >> "$GITHUB_ENV"
+      # Pinned to setup-entire PR #1 until released
+      - uses: entireio/setup-entire@13330cda9b1ab2795f3fc64d27bad67e15fbd29e
+        with:
+          service-account: svc_01M6JDV1WP4PTGV5WBVAQDX3K5
+          auth-url: https://au.auth.entire.io
 
       - name: Sync opted-in branches
         id: sync
