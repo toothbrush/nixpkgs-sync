@@ -73,7 +73,9 @@ jobs:
           jq -e '.blocked == 0' result.json > /dev/null
 
       - name: Update README
-        if: always() && steps.sync.outcome != 'skipped'
+        if: always()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
           ./render-readme.sh result.json
