@@ -23,7 +23,8 @@ jobs:
       SERVICE_ACCOUNT: svc_01M6JDV1WP4PTGV5WBVAQDX3K5
       SOURCE: https://github.com/NixOS/nixpkgs.git
       TARGET: entire://aws-ap-southeast-2.entire.io/et/toothbrush/nixpkgs
-      GIT_SYNC_VERSION: v0.10.0
+      # Pinned to git-sync PR #137 until released
+      GIT_SYNC_VERSION: v0.10.1-0.20261104053856-b4b2be3003ea
       GIT_REMOTE_ENTIRE_SHA: b6900cf9f71bfbebc68b88860892e8ae5bad30b8
     steps:
       - uses: actions/checkout@v7
