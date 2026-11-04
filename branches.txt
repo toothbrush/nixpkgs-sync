@@ -2,3 +2,4 @@
 master
 nixos-unstable
 nixos-26.05
+nixpkgs-unstable
