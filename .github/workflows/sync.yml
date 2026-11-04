@@ -34,8 +34,7 @@ jobs:
       - name: Install git-sync
         run: go install "entire.io/entire/git-sync/cmd/git-sync@${GIT_SYNC_VERSION}"
 
-      # Pinned to setup-entire PR #1 until released
-      - uses: entireio/setup-entire@13330cda9b1ab2795f3fc64d27bad67e15fbd29e
+      - uses: entireio/setup-entire@v1
         with:
           service-account: svc_01M6JDV1WP4PTGV5WBVAQDX3K5
           auth-url: https://au.auth.entire.io
