@@ -21,8 +21,8 @@ jobs:
     env:
       SOURCE: https://github.com/NixOS/nixpkgs.git
       TARGET: entire://aws-ap-southeast-2.entire.io/et/toothbrush/nixpkgs
-      # Pinned to git-sync PR #137 until released
-      GIT_SYNC_VERSION: v0.10.1-0.20261104053856-b4b2be3003ea
+      # Unreleased git-sync main; pin a release later
+      GIT_SYNC_VERSION: v0.10.1-0.20261105102341-633bccb3b30a
     steps:
       - uses: actions/checkout@v7
 
