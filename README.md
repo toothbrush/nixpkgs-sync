@@ -2,10 +2,10 @@
 
 | Branch | Upstream commit | Last sync | Status |
 |---|---|---|---|
-| `master` | [`490e19a28ad2`](https://github.com/NixOS/nixpkgs/commit/490e19a28ad2881b7ed4a72ddbc32ed1b0afa1a1) | 2026-11-12 07:23 UTC | ❌ [failed](https://github.com/toothbrush/nixpkgs-sync/actions/runs/43296512221) |
-| `nixos-unstable` | [`177d0540942f`](https://github.com/NixOS/nixpkgs/commit/177d0540942fb205af6993b1d5fa0b57799e09f8) | 2026-11-12 07:23 UTC | ❌ [failed](https://github.com/toothbrush/nixpkgs-sync/actions/runs/43296512221) |
-| `nixos-26.05` | [`ac588ef1c914`](https://github.com/NixOS/nixpkgs/commit/ac588ef1c914865dad517b337ea0eb9694a4021c) | 2026-11-12 07:23 UTC | ❌ [failed](https://github.com/toothbrush/nixpkgs-sync/actions/runs/43296512221) |
-| `nixpkgs-unstable` | [`f6bf1059f025`](https://github.com/NixOS/nixpkgs/commit/f6bf1059f02576e0b913c7b49d5e4eb6dda9cc22) | 2026-11-12 07:23 UTC | ❌ [failed](https://github.com/toothbrush/nixpkgs-sync/actions/runs/43296512221) |
+| `master` | [`309a5178dc09`](https://github.com/NixOS/nixpkgs/commit/309a5178dc0967ef110558c537a3b73195e01fe9) | 2026-11-13 06:55 UTC | ✅ |
+| `nixos-unstable` | [`d4f25a3e5620`](https://github.com/NixOS/nixpkgs/commit/d4f25a3e562008648d45bcf2d70bcc7422cad84e) | 2026-11-13 06:55 UTC | ✅ |
+| `nixos-26.05` | [`ac588ef1c914`](https://github.com/NixOS/nixpkgs/commit/ac588ef1c914865dad517b337ea0eb9694a4021c) | 2026-11-13 06:55 UTC | ✅ |
+| `nixpkgs-unstable` | [`2074cc672349`](https://github.com/NixOS/nixpkgs/commit/2074cc672349f14240fb7ea90d509e0b643e9dd4) | 2026-11-13 06:55 UTC | ✅ |
 
 Every 6 hours, this repo mirrors the branches in `branches.txt` from [NixOS/nixpkgs](https://github.com/NixOS/nixpkgs) to [`/et/toothbrush/nixpkgs`](https://entire.io/et/toothbrush/nixpkgs) on Entire, as `upstream/<branch>`.
 
